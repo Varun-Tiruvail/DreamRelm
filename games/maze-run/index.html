@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Maze.Run – Infinite procedural maze game. Navigate labyrinths, collect keys, and beat your ghost. Part of DreamRealm Games.">
+  <title>Maze.Run · DreamRealm Games</title>
+  <link rel="stylesheet" href="../../assets/css/global.css">
+  <link rel="stylesheet" href="maze.css">
+</head>
+<body>
+
+<!-- ── Top Nav ── -->
+<nav class="game-nav" id="game-nav">
+  <a href="../../index.html" class="nav-home" id="btn-home" title="Back to Hub">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span>Hub</span>
+  </a>
+  <div class="nav-title">
+    <span class="nav-maze">Maze</span><span class="nav-dot">.</span><span class="nav-run">Run</span>
+  </div>
+  <button class="nav-pause" id="btn-pause" title="Pause (ESC)">
+    <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+  </button>
+</nav>
+
+<!-- ── HUD ── -->
+<div class="hud" id="hud">
+  <div class="hud-block" id="hud-level-block">
+    <span class="hud-label">Level</span>
+    <span class="hud-value" id="hud-level">1</span>
+  </div>
+  <div class="hud-block" id="hud-time-block">
+    <span class="hud-label">Time</span>
+    <span class="hud-value" id="hud-time">0:00</span>
+  </div>
+  <div class="hud-block" id="hud-score-block">
+    <span class="hud-label">Score</span>
+    <span class="hud-value" id="hud-score">0</span>
+  </div>
+  <div class="hud-block hud-keys-block hidden" id="hud-keys-block">
+    <span class="hud-label">Keys</span>
+    <span class="hud-value" id="hud-keys">0/0</span>
+  </div>
+</div>
+
+<!-- ── Game Container ── -->
+<div class="game-container" id="game-container">
+
+  <!-- Mini Map (level 15+) -->
+  <canvas class="mini-map hidden" id="mini-map" width="120" height="90"></canvas>
+
+  <!-- Main Canvas -->
+  <canvas id="maze-canvas"></canvas>
+
+  <!-- Build overlay text -->
+  <div class="build-msg hidden" id="build-msg">
+    <span class="build-text">Generating Maze…</span>
+  </div>
+
+</div>
+
+<!-- ── Mobile D-Pad ── -->
+<div class="dpad-container hidden" id="dpad-container">
+  <div class="dpad">
+    <button class="dpad-btn dpad-up"    id="dpad-up"    aria-label="Up">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-8 8h16z"/></svg>
+    </button>
+    <div class="dpad-mid-row">
+      <button class="dpad-btn dpad-left"  id="dpad-left"  aria-label="Left">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 12l8-8v16z"/></svg>
+      </button>
+      <div class="dpad-center"></div>
+      <button class="dpad-btn dpad-right" id="dpad-right" aria-label="Right">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 12l-8 8V4z"/></svg>
+      </button>
+    </div>
+    <button class="dpad-btn dpad-down"  id="dpad-down"  aria-label="Down">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 20l-8-8h16z"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ── Pause Overlay ── -->
+<div class="overlay pause-overlay hidden" id="pause-overlay">
+  <div class="overlay-card">
+    <h2 class="overlay-title">Paused</h2>
+    <div class="overlay-btns">
+      <button class="ovr-btn primary" id="btn-resume">Resume</button>
+      <button class="ovr-btn" id="btn-restart">Restart Level</button>
+      <a href="../../index.html" class="ovr-btn" id="btn-home2">Back to Hub</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── Win Overlay ── -->
+<div class="overlay win-overlay hidden" id="win-overlay">
+  <div class="overlay-card win-card">
+    <div class="win-crown">👑</div>
+    <h2 class="overlay-title win-title">Level Complete!</h2>
+    <div class="win-stats" id="win-stats">
+      <div class="win-stat"><span class="ws-label">Time</span><span class="ws-val" id="ws-time">—</span></div>
+      <div class="win-stat"><span class="ws-label">Score</span><span class="ws-val" id="ws-score">—</span></div>
+      <div class="win-stat"><span class="ws-label">Best</span><span class="ws-val" id="ws-best">—</span></div>
+    </div>
+    <div class="overlay-btns">
+      <button class="ovr-btn primary" id="btn-next">Next Level →</button>
+      <button class="ovr-btn" id="btn-replay">Replay</button>
+    </div>
+  </div>
+</div>
+
+<script src="maze.js"></script>
+</body>
+</html>

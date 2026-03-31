@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DreamRealm Games – A universe of immersive browser games. No downloads, no accounts. Play Maze.Run and discover more worlds coming soon.">
+  <title>DreamRealm Games</title>
+  <link rel="stylesheet" href="assets/css/global.css">
+  <link rel="stylesheet" href="assets/css/home.css">
+</head>
+<body>
+
+<canvas id="starfield" class="starfield-canvas"></canvas>
+<div class="nebula-overlay"></div>
+
+<main class="main-content">
+
+  <!-- Hero -->
+  <header class="hero" id="header">
+    <div class="hero-badge"><span class="badge-dot"></span>7 Worlds · 1 Universe</div>
+    <h1 class="hero-title">
+      <span class="title-dream">Dream</span><span class="title-realm">Realm</span><br>
+      <span class="title-games">Games</span>
+    </h1>
+    <p class="hero-subtitle">Enter a universe of hand-crafted browser experiences. No downloads. No accounts. Just pure play.</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-value">∞</span><span class="stat-label">Levels</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span class="stat-value">7</span><span class="stat-label">Worlds</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span class="stat-value">0</span><span class="stat-label">Downloads</span></div>
+    </div>
+  </header>
+
+  <!-- Section label -->
+  <div class="section-header">
+    <div class="section-line"></div>
+    <h2 class="section-title">Choose Your World</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <!-- Game Cards Grid -->
+  <section class="games-grid" id="games-grid">
+
+    <!-- 1. Maze.Run — LIVE -->
+    <article class="game-card active-card" id="card-maze-run" onclick="window.location.href='games/maze-run/index.html'">
+      <div class="card-glow maze-glow"></div>
+      <div class="card-inner">
+        <div class="card-header">
+          <div class="card-icon maze-icon">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <rect x="6" y="6" width="36" height="36" rx="2"/>
+              <path d="M6 18h12M18 18v12M18 30h12M30 30V18M30 18h12"/>
+              <path d="M6 30h6M36 30v12M6 42h12"/>
+            </svg>
+          </div>
+          <div class="card-badge live-badge"><span class="live-dot"></span>LIVE</div>
+        </div>
+        <div class="card-body">
+          <div class="card-genre">Puzzle · Infinite</div>
+          <h3 class="card-title">Maze<span class="card-title-dot">.</span>Run</h3>
+          <p class="card-desc">Navigate infinitely scaling labyrinths. From simple corridors to multi-zone key-lock puzzles with ghost replays. How far can you go?</p>
+        </div>
+        <div class="card-footer">
+          <div class="card-tags">
+            <span class="tag">Procedural</span>
+            <span class="tag">Ghost Replay</span>
+            <span class="tag">Infinite</span>
+          </div>
+          <a href="games/maze-run/index.html" class="play-btn" id="play-maze-run" onclick="event.stopPropagation()">
+            <span>Play Now</span>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- 2. Skid Bike -->
+    <article class="game-card coming-soon-card" id="card-skid-bike">
+      <div class="card-glow orange-glow"></div>
+      <div class="card-inner">
+        <div class="card-header">
+          <div class="card-icon orange-icon">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="14" cy="34" r="7"/><circle cx="34" cy="34" r="7"/>
+              <path d="M14 34 L24 12 L34 34"/>
+              <path d="M19 26h10M24 12l4-6"/>
+            </svg>
+          </div>
+          <div class="card-badge soon-badge">SOON</div>
+        </div>
+        <div class="card-body">
+          <div class="card-genre">Racing · Arcade</div>
+          <h3 class="card-title">Skid<span class="card-title-dot" style="color:var(--orange)">.</span>Bike</h3>
+          <p class="card-desc">Master the art of the perfect skid. High-speed motorcycle racing with real physics-based drifting mechanics and wild tracks.</p>
+        </div>
+        <div class="card-footer">
+          <div class="card-tags"><span class="tag">Physics</span><span class="tag">Racing</span><span class="tag">Drift</span></div>
+          <button class="coming-soon-btn">Coming Soon</button>
+        </div>
+      </div>
+      <div class="coming-soon-overlay"><div class="cs-content">
+        <svg class="cs-lock" viewBox="0 0 48 48"><path d="M16 22v-6a8 8 0 1 1 16 0v6" stroke="currentColor" stroke-width="2" fill="none"/><rect x="12" y="22" width="24" height="20" rx="3" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="24" cy="32" r="3" fill="currentColor"/></svg>
+        <p>In Development</p>
+      </div></div>
+    </article>
+
+    <!-- 3. Skate Infinity -->
+    <article class="game-card coming-soon-card" id="card-skate-infinity">
+      <div class="card-glow purple-glow"></div>
+      <div class="card-inner">
+        <div class="card-header">
+          <div class="card-icon purple-icon">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <rect x="10" y="26" width="28" height="10" rx="3"/>
+              <circle cx="16" cy="38" r="4"/><circle cx="32" cy="38" r="4"/>
+              <path d="M22 26l-6-10M26 26l6-10M16 16h16"/>
+            </svg>
+          </div>
+          <div class="card-badge soon-badge">SOON</div>
+        </div>
+        <div class="card-body">
+          <div class="card-genre">Sports · Infinite</div>
+          <h3 class="card-title">Skate<span class="card-title-dot" style="color:#8b5cf6">.</span>Infinity</h3>
+          <p class="card-desc">Endless skating runs with trick combos, ramps, and dynamic city environments that never repeat twice.</p>
+        </div>
+        <div class="card-footer">
+          <div class="card-tags"><span class="tag">Tricks</span><span class="tag">Infinite</span><span class="tag">Combos</span></div>
+          <button class="coming-soon-btn">Coming Soon</button>
+        </div>
+      </div>
+      <div class="coming-soon-overlay"><div class="cs-content">
+        <svg class="cs-lock" viewBox="0 0 48 48"><path d="M16 22v-6a8 8 0 1 1 16 0v6" stroke="currentColor" stroke-width="2" fill="none"/><rect x="12" y="22" width="24" height="20" rx="3" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="24" cy="32" r="3" fill="currentColor"/></svg>
+        <p>In Development</p>
+      </div></div>
+    </article>
+
+    <!-- 4. Go Buggy -->
+    <article class="game-card coming-soon-card" id="card-go-buggy">
+      <div class="card-glow yellow-glow"></div>
+      <div class="card-inner">
+        <div class="card-header">
+          <div class="card-icon yellow-icon">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <rect x="10" y="18" width="28" height="14" rx="4"/>
+              <circle cx="16" cy="34" r="5"/><circle cx="32" cy="34" r="5"/>
+              <path d="M16 18v-4h16v4M12 26h24"/>
+            </svg>
+          </div>
+          <div class="card-badge soon-badge">SOON</div>
+        </div>
+        <div class="card-body">
+          <div class="card-genre">Racing · Off-road</div>
+          <h3 class="card-title">Go<span class="card-title-dot" style="color:var(--yellow)">.</span>Buggy</h3>
+          <p class="card-desc">Off-road go-kart chaos through wild terrain. Dodge boulders, catch air on ramps, and beat the clock across brutal tracks.</p>
+        </div>
+        <div class="card-footer">
+          <div class="card-tags"><span class="tag">Off-road</span><span class="tag">Stunts</span><span class="tag">Arcade</span></div>
+          <button class="coming-soon-btn">Coming Soon</button>
+        </div>
+      </div>
+      <div class="coming-soon-overlay"><div class="cs-content">
+        <svg class="cs-lock" viewBox="0 0 48 48"><path d="M16 22v-6a8 8 0 1 1 16 0v6" stroke="currentColor" stroke-width="2" fill="none"/><rect x="12" y="22" width="24" height="20" rx="3" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="24" cy="32" r="3" fill="currentColor"/></svg>
+        <p>In Development</p>
+      </div></div>
+    </article>
+
+    <!-- 5. Infinite Snake -->
+    <article class="game-card coming-soon-card" id="card-infinite-snake">
+      <div class="card-glow green-glow"></div>
+      <div class="card-inner">
+        <div class="card-header">
+          <div class="card-icon green-icon">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M8 30 Q8 14 24 14 Q40 14 40 24 Q40 34 28 34 Q16 34 16 28 Q16 22 24 22"/>
+              <circle cx="9" cy="34" r="4"/>
+            </svg>
+          </div>
+          <div class="card-badge soon-badge">SOON</div>
+        </div>
+        <div class="card-body">
+          <div class="card-genre">Classic · Evolved</div>
+          <h3 class="card-title">Infinite<span class="card-title-dot" style="color:#22c55e">.</span>Snake</h3>
+          <p class="card-desc">Snake reimagined — power-ups, wormholes, multiplier chains, and an ever-expanding arena that grows with your score.</p>
+        </div>
+        <div class="card-footer">
+          <div class="card-tags"><span class="tag">Classic</span><span class="tag">Power-ups</span><span class="tag">Wormholes</span></div>
+          <button class="coming-soon-btn">Coming Soon</button>
+        </div>
+      </div>
+      <div class="coming-soon-overlay"><div class="cs-content">
+        <svg class="cs-lock" viewBox="0 0 48 48"><path d="M16 22v-6a8 8 0 1 1 16 0v6" stroke="currentColor" stroke-width="2" fill="none"/><rect x="12" y="22" width="24" height="20" rx="3" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="24" cy="32" r="3" fill="currentColor"/></svg>
+        <p>In Development</p>
+      </div></div>
+    </article>
+
+    <!-- 6. Archer -->
+    <article class="game-card coming-soon-card" id="card-archer">
+      <div class="card-glow red-glow"></div>
+      <div class="card-inner">
+        <div class="card-header">
+          <div class="card-icon red-icon">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M10 38 L38 10"/>
+              <path d="M38 10 l-2 9 M38 10 l-9 2"/>
+              <circle cx="10" cy="38" r="4"/>
+              <path d="M22 26 L18 22"/>
+            </svg>
+          </div>
+          <div class="card-badge soon-badge">SOON</div>
+        </div>
+        <div class="card-body">
+          <div class="card-genre">Precision · Action</div>
+          <h3 class="card-title">Archer<span class="card-title-dot" style="color:var(--red)">.</span>Elite</h3>
+          <p class="card-desc">Wind, gravity, and moving targets. A precision archery challenge that rewards patience, timing, and perfect aim.</p>
+        </div>
+        <div class="card-footer">
+          <div class="card-tags"><span class="tag">Precision</span><span class="tag">Physics</span><span class="tag">Action</span></div>
+          <button class="coming-soon-btn">Coming Soon</button>
+        </div>
+      </div>
+      <div class="coming-soon-overlay"><div class="cs-content">
+        <svg class="cs-lock" viewBox="0 0 48 48"><path d="M16 22v-6a8 8 0 1 1 16 0v6" stroke="currentColor" stroke-width="2" fill="none"/><rect x="12" y="22" width="24" height="20" rx="3" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="24" cy="32" r="3" fill="currentColor"/></svg>
+        <p>In Development</p>
+      </div></div>
+    </article>
+
+    <!-- 7. PixelDrift -->
+    <article class="game-card coming-soon-card" id="card-pixel-drift">
+      <div class="card-glow cyan-glow"></div>
+      <div class="card-inner">
+        <div class="card-header">
+          <div class="card-icon cyan-icon">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <rect x="6" y="20" width="36" height="12" rx="3"/>
+              <rect x="14" y="14" width="20" height="8" rx="2"/>
+              <circle cx="16" cy="34" r="4"/><circle cx="32" cy="34" r="4"/>
+            </svg>
+          </div>
+          <div class="card-badge soon-badge">SOON</div>
+        </div>
+        <div class="card-body">
+          <div class="card-genre">Racing · Retro</div>
+          <h3 class="card-title">Pixel<span class="card-title-dot" style="color:var(--cyan)">.</span>Drift</h3>
+          <p class="card-desc">Retro pixel-art street racing through neon-lit cities. Drift around corners, collect nitro, dominate the leaderboard.</p>
+        </div>
+        <div class="card-footer">
+          <div class="card-tags"><span class="tag">Retro</span><span class="tag">Neon</span><span class="tag">Drift</span></div>
+          <button class="coming-soon-btn">Coming Soon</button>
+        </div>
+      </div>
+      <div class="coming-soon-overlay"><div class="cs-content">
+        <svg class="cs-lock" viewBox="0 0 48 48"><path d="M16 22v-6a8 8 0 1 1 16 0v6" stroke="currentColor" stroke-width="2" fill="none"/><rect x="12" y="22" width="24" height="20" rx="3" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="24" cy="32" r="3" fill="currentColor"/></svg>
+        <p>In Development</p>
+      </div></div>
+    </article>
+
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-logo">DreamRealm<span class="footer-dot">.</span>Games</div>
+    <p class="footer-tagline">Built with ❤️ — No backend. No tracking. Just games.</p>
+  </footer>
+
+</main>
+
+<script src="assets/js/home.js"></script>
+</body>
+</html>
