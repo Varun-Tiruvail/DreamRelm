@@ -267,6 +267,56 @@ body {
     letter-spacing: 1px;
 }
 
+/* Difficulty Selector */
+.difficulty-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+    width: 100%;
+}
+
+.diff-label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.diff-options {
+    display: flex;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--radius-md);
+    padding: 4px;
+    gap: 4px;
+}
+
+.diff-btn {
+    flex: 1;
+    padding: 10px 0;
+    font-family: var(--font-title);
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.diff-btn:hover {
+    color: var(--text);
+    background: rgba(255,255,255,0.05);
+}
+
+.diff-btn.active {
+    background: var(--text);
+    color: var(--bg-0);
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+}
+
 /* Stats panel */
 .stats-grid {
     display: grid;

@@ -46,7 +46,12 @@ let targetCamera = { x: 0, y: 0, zoom: 1 };
 let snake = [];
 let snakeDir = { x: 1, y: 0 };
 let nextDir = { x: 1, y: 0 };
-let snakeSpeedBase = 15;
+
+// Difficulty configuration
+let baseTickRate = 15;
+let difficultyMultiplier = 1;
+
+let snakeSpeedBase = baseTickRate;
 let currentTickRate = 1000 / snakeSpeedBase;
 
 // Entities
@@ -117,9 +122,9 @@ function drawStarfield(dt) {
 
 function resetGame() {
     GAME.score = 0;
-    GAME.multiplier = 1;
+    GAME.multiplier = 1 * difficultyMultiplier;
     GAME.arenaLevel = 1;
-    GAME.state = 'PLAYING';
+    GAME.state = 'READY';
     
     // Reset World Bounds
     WORLD.minX = -GRID_SIZE * 15;
@@ -137,6 +142,8 @@ function resetGame() {
     snakeDir = { x: 1, y: 0 };
     nextDir = { x: 1, y: 0 };
     
+    // Restore base tick rate
+    snakeSpeedBase = baseTickRate;
     currentTickRate = 1000 / snakeSpeedBase;
 
     foods = [];
@@ -205,32 +212,30 @@ function spawnFood(count = 1) {
 
 // --- Input Handling ---
 
-// Input handling was unchanged, adding a small comment to signify readiness
-document.addEventListener('keydown', (e) => {
-    if (GAME.state !== 'PLAYING') return;
-    
-    if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
-        if (snakeDir.y === 0) nextDir = { x: 0, y: -1 };
-    } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
-        if (snakeDir.y === 0) nextDir = { x: 0, y: 1 };
-    } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
-        if (snakeDir.x === 0) nextDir = { x: -1, y: 0 };
-    } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-        if (snakeDir.x === 0) nextDir = { x: 1, y: 0 };
+function handleInput(dirStr) {
+    if (GAME.state === 'READY') {
+        GAME.state = 'PLAYING';
     }
+    if (GAME.state !== 'PLAYING') return;
+
+    if (dirStr === 'up' && snakeDir.y === 0) nextDir = { x: 0, y: -1 };
+    else if (dirStr === 'down' && snakeDir.y === 0) nextDir = { x: 0, y: 1 };
+    else if (dirStr === 'left' && snakeDir.x === 0) nextDir = { x: -1, y: 0 };
+    else if (dirStr === 'right' && snakeDir.x === 0) nextDir = { x: 1, y: 0 };
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') handleInput('up');
+    else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') handleInput('down');
+    else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') handleInput('left');
+    else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') handleInput('right');
 });
 
 // Touch controls via overlay buttons
 document.querySelectorAll('.dpad-btn').forEach(btn => {
     btn.addEventListener('touchstart', (e) => {
         e.preventDefault(); // Prevent double firing
-        if (GAME.state !== 'PLAYING') return;
-        const dir = btn.getAttribute('data-dir');
-        
-        if (dir === 'up' && snakeDir.y === 0) nextDir = { x: 0, y: -1 };
-        else if (dir === 'down' && snakeDir.y === 0) nextDir = { x: 0, y: 1 };
-        else if (dir === 'left' && snakeDir.x === 0) nextDir = { x: -1, y: 0 };
-        else if (dir === 'right' && snakeDir.x === 0) nextDir = { x: 1, y: 0 };
+        handleInput(btn.getAttribute('data-dir'));
     });
 });
 
@@ -243,7 +248,6 @@ canvas.addEventListener('touchstart', e => {
 }, {passive: true});
 
 canvas.addEventListener('touchend', e => {
-    if (GAME.state !== 'PLAYING') return;
     let touchEndX = e.changedTouches[0].screenX;
     let touchEndY = e.changedTouches[0].screenY;
     
@@ -253,14 +257,14 @@ canvas.addEventListener('touchend', e => {
     if (Math.abs(dx) > Math.abs(dy)) {
         // Horizontal
         if (Math.abs(dx) > 30) {
-            if (dx > 0 && snakeDir.x === 0) nextDir = { x: 1, y: 0 };
-            else if (dx < 0 && snakeDir.x === 0) nextDir = { x: -1, y: 0 };
+            if (dx > 0) handleInput('right');
+            else if (dx < 0) handleInput('left');
         }
     } else {
         // Vertical
         if (Math.abs(dy) > 30) {
-            if (dy > 0 && snakeDir.y === 0) nextDir = { x: 0, y: 1 };
-            else if (dy < 0 && snakeDir.y === 0) nextDir = { x: 0, y: -1 };
+            if (dy > 0) handleInput('down');
+            else if (dy < 0) handleInput('up');
         }
     }
 }, {passive: true});
@@ -270,7 +274,18 @@ canvas.addEventListener('touchend', e => {
 document.getElementById('start-btn').addEventListener('click', resetGame);
 document.getElementById('restart-btn').addEventListener('click', resetGame);
 
+// Difficulty Selection Logic
+document.querySelectorAll('.diff-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        baseTickRate = parseFloat(e.target.getAttribute('data-speed'));
+        difficultyMultiplier = parseFloat(e.target.getAttribute('data-mult'));
+    });
+});
+
 document.getElementById('pause-btn').addEventListener('click', () => {
+    if (GAME.state === 'READY') return; // Cannot pause until moving
     if (GAME.state === 'PLAYING') {
         GAME.state = 'PAUSED';
         document.querySelector('.icon-pause').style.display = 'none';
@@ -553,13 +568,37 @@ function render(dt) {
         ctx.shadowBlur = 0;
     }
 
+    // Ready State Overlay
+    if (GAME.state === 'READY') {
+        // Need to undo camera transform for overlay text
+        ctx.restore(); 
+        ctx.save();
+        
+        ctx.fillStyle = 'white';
+        ctx.font = `600 24px ${getComputedStyle(document.body).getPropertyValue('--font-display')}, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
+        ctx.shadowBlur = 15;
+        
+        // Pulse animation
+        const alpha = 0.5 + Math.sin(performance.now() * 0.005) * 0.5;
+        ctx.globalAlpha = alpha;
+        
+        // Render in center of screen
+        ctx.fillText("PRESS DIRECTION OR SWIPE TO START", canvas.width / 2, canvas.height / 2 + 100);
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+        ctx.restore();
+        return; // Early return to avoid double restore
+    }
+
     ctx.restore();
 }
 
 // --- Main Loop ---
 
 function gameLoop(timestamp) {
-    if (GAME.state !== 'PLAYING') {
+    if (GAME.state !== 'PLAYING' && GAME.state !== 'READY') {
         GAME.loopId = null;
         return;
     }
@@ -587,7 +626,7 @@ function gameLoop(timestamp) {
 
     // Fixed timestep logic update
     while (GAME.accumulator >= currentTickRate) {
-        tick();
+        if (GAME.state === 'PLAYING') tick();
         GAME.accumulator -= currentTickRate;
     }
 
