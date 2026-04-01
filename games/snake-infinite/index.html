@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Infinite Snake - A pure, infinite puzzle game by DreamRealm Games.">
+  <title>Snake Infinite - DreamRealm Games</title>
+  
+  <link rel="stylesheet" href="../../assets/css/global.css">
+  <link rel="stylesheet" href="snake.css">
+</head>
+<body>
+
+  <!-- Background Layer -->
+  <canvas id="starfield" class="starfield-canvas"></canvas>
+  <div class="nebula-overlay"></div>
+
+  <!-- Game Canvas -->
+  <canvas id="game-canvas"></canvas>
+
+  <!-- HUD Menu / Top Right -->
+  <div class="top-nav">
+    <a href="../../index.html" class="nav-btn back-btn" aria-label="Back to Hub">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <span>Hub</span>
+    </a>
+    <button id="pause-btn" class="nav-btn pause-btn" aria-label="Pause Game">
+      <svg viewBox="0 0 24 24" fill="none" class="icon-pause" stroke="currentColor" stroke-width="2"><path d="M10 4H6v16h4V4zM18 4h-4v16h4V4z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" class="icon-play" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M5 3l14 9-14 9V3z"/></svg>
+    </button>
+  </div>
+
+  <!-- Game HUD -->
+  <div id="hud" class="hud-container hidden">
+      <div class="hud-stats">
+          <div class="score-box">
+              <span class="hud-label">SCORE</span>
+              <span class="hud-value" id="score-display">0</span>
+          </div>
+          <div class="score-box">
+              <span class="hud-label">MULTIPLIER</span>
+              <span class="hud-value multiplier-val" id="multiplier-display">x1</span>
+          </div>
+          <div class="score-box">
+            <span class="hud-label">ARENA LVL</span>
+            <span class="hud-value" id="arena-lvl-display">1</span>
+          </div>
+      </div>
+      <div id="active-powerups" class="powerups-container">
+          <!-- Dynamically populated -->
+      </div>
+  </div>
+
+  <!-- Overlays -->
+  <div id="main-menu" class="overlay menu-active">
+      <div class="menu-card glass-panel">
+          <div class="game-badge green-badge"><span class="live-dot"></span>LIVE</div>
+          <h1 class="game-title">Infinite<span class="title-dot" style="color:var(--green)">.</span>Snake</h1>
+          <p class="game-subtitle">The universe expands as you consume star matter.</p>
+          
+          <div class="controls-info">
+             <div class="control-key">W A S D</div>
+             <span>or</span>
+             <div class="control-key">Arrows</div>
+             <span>or Swipe</span>
+          </div>
+
+          <button id="start-btn" class="action-btn primary-btn play-btn-glow">
+            <span>Play Game</span>
+             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+      </div>
+  </div>
+
+  <div id="game-over-menu" class="overlay hidden">
+    <div class="menu-card glass-panel glow-red">
+        <h2 class="game-over-title">Universe Collapsed</h2>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-lbl">Final Score</span>
+                <span class="stat-val" id="go-score">0</span>
+            </div>
+             <div class="stat-item">
+                <span class="stat-lbl">Max Multiplier</span>
+                <span class="stat-val" id="go-max-mult">x1</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-lbl">Arena Level</span>
+                <span class="stat-val" id="go-arena-lvl">1</span>
+            </div>
+        </div>
+        <button id="restart-btn" class="action-btn primary-btn play-btn-glow">
+            <span>Restart Expansion</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
+        </button>
+    </div>
+  </div>
+
+  <!-- Mobile D-PAD (Only visible on touch) -->
+  <div id="mobile-controls" class="mobile-controls hidden">
+     <button class="dpad-btn up" data-dir="up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+     <button class="dpad-btn left" data-dir="left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+     <button class="dpad-btn right" data-dir="right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+     <button class="dpad-btn down" data-dir="down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></button>
+  </div>
+
+  <script src="snake.js"></script>
+</body>
+</html>
