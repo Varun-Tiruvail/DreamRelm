@@ -1,0 +1,262 @@
+# Pixel.Drift — 3D Racing Game Implementation Plan
+
+## Overview
+
+**Pixel.Drift** is the 7th game in the DreamRealm Games Hub. It's a 3D arcade racing game built entirely in the browser using **Three.js**. No backend, no external assets — everything is procedurally generated or programmatically modelled in JavaScript.
+
+The player races a car around progressively complex tracks. The track starts as a simple oval and evolves into a multi-chicane circuit with hairpins and banked curves. Obstacles appear from **Level 31** onward in three flavors.
+
+---
+
+## Tech Stack
+
+| Layer | Choice | Reason |
+|---|---|---|
+| 3D Engine | Three.js r167 (CDN) | Mature, no install, pure browser |
+| Physics | Custom (no cannon.js) | Keep it zero-dependency; arcade feel |
+| Font | Google Fonts (Outfit, Space Grotesk) | Matches hub design tokens |
+| Audio | Web Audio API (optional, synthesized beeps) | No asset files needed |
+| Backend | None | All state in JS memory + localStorage for high score |
+
+---
+
+## File Structure
+
+```
+games/pixel-drift/
+├── index.html          # Game shell, HUD, menus
+├── drift.css           # Neon/glassmorphism styles (matches hub tokens)
+└── drift.js            # Full game engine (~800-1000 lines)
+```
+
+---
+
+## Proposed Changes
+
+### [NEW] `games/pixel-drift/index.html`
+
+Shell file containing:
+- Canvas element for Three.js renderer
+- HUD overlay: lap counter, speed, level, health bar
+- Main menu overlay: difficulty, "Play" button
+- Level complete overlay: stats, "Next Level" button  
+- Game over overlay: "Restart" button
+- CDN script tags: Three.js (`https://cdn.jsdelivr.net/npm/three@0.167/build/three.min.js`)
+
+### [NEW] `games/pixel-drift/drift.css`
+
+Neon-teal aesthetic matching hub. Key elements:
+- `.hud-container`, `.health-bar`, `.speed-meter`
+- `.overlay`, `.glass-panel` (reused from snake pattern)
+- Obstacle type indicators, level badge
+
+### [NEW] `games/pixel-drift/drift.js`
+
+Full game engine — sections:
+
+---
+
+### Engine Architecture
+
+```
+┌─ Scene Setup ─────────────────────────────────────────┐
+│  Three.js Scene, PerspectiveCamera (chase cam),        │
+│  WebGLRenderer (antialiased), directional + ambient    │
+│  lights, fog for depth effect                          │
+└───────────────────────────────────────────────────────┘
+
+┌─ Track Generation ────────────────────────────────────┐
+│  generateTrack(level) → array of CenterlinePoints      │
+│  Level 1-5:   Simple oval (8 control points)           │
+│  Level 6-15:  Two chicanes added                       │
+│  Level 16-29: Hairpin corners, variable-width straights│
+│  Level 30+:   Full circuit with banked S-curves        │
+│                                                        │
+│  Track mesh built with THREE.TubeGeometry along        │
+│  CatmullRomCurve3 centerline. Road width = 12 units.   │
+│  Track walls (invisible collision planes) on each side │
+└───────────────────────────────────────────────────────┘
+
+┌─ Car Model (Programmatic) ────────────────────────────┐
+│  No external GLB/OBJ files. Built from BoxGeometry     │
+│  primitives grouped into a THREE.Group:                │
+│  - Body (wide flat box, cyan tinted)                   │
+│  - Cabin (narrower box on top)                         │
+│  - 4x Wheels (CylinderGeometry, rotated 90°)          │
+│  - Headlights (PointLight, yellow glow)                │
+│  Car group follows track centerline tangent            │
+└───────────────────────────────────────────────────────┘
+
+┌─ Physics (Custom Arcade) ─────────────────────────────┐
+│  - No rigid body engine (cannon.js), pure math         │
+│  - t parameter (0–1) tracks car position along curve   │
+│  - Speed: t += speed * dt                              │
+│  - Steering: lateral offset from centerline (±4 units)│
+│  - Wheel spin animation: wheel rotation += speed * dt  │
+│  - Wall bounce: if |offset| > halfWidth → reflect      │
+│  - Lap detection: t wraps around 0–1                   │
+└───────────────────────────────────────────────────────┘
+
+┌─ Camera ──────────────────────────────────────────────┐
+│  Chase camera: positioned behind & above car           │
+│  camera.position = carPos - tangent*8 + up*4          │
+│  camera.lookAt( carPos + tangent*2 )                   │
+│  Smooth lerp each frame (lerp factor 0.1)             │
+└───────────────────────────────────────────────────────┘
+```
+
+---
+
+### Track Generation Detail
+
+```js
+function generateTrack(level) {
+    // Returns array of Vector3 control points for CatmullRomCurve3
+    // Level 1: simple oval — 8 points forming ellipse
+    // Each level adds: more control points, sharper turns, varied radii
+    // From level 16: introduce chicane pairs (S-shape insertions)
+    // From level 25: hairpin (180° reversal node)
+    // Track is always a closed loop (curve.closed = true)
+}
+```
+
+Track surface: `THREE.TubeGeometry(curve, segments, radius, radialSegments)`  
+Road markings: dashed `LineSegments` along centerline  
+Environment: flat plane (`PlaneGeometry`) as ground, colored `#0a0a1a`  
+Skybox: solid dark color with subtle fog (`scene.fog = new THREE.FogExp2(...)`)  
+
+---
+
+### Level Progression
+
+| Level Range | Track Shape | Lap Time Target | Notes |
+|---|---|---|---|
+| 1–5 | Simple oval | 30s | Just gas + steer |
+| 6–15 | 2 chicanes | 40s | First real corners |
+| 16–29 | Hairpins + chicanes | 55s | Technical racing |
+| 30+ | Full complex circuit | 70s+ | Obstacles spawn too |
+
+**Level Up Trigger:** Complete N laps (N = 1 + floor(level/5)). Max laps per level = 10.  
+**Speed Scaling:** Base speed 0.0008 (t/ms), + 0.00003 per level, capped at 0.003.
+
+---
+
+### Obstacle System (Level 31+)
+
+Obstacles are parked on the track at procedurally chosen positions along the centerline.
+
+| Type | Visual | Effect | Density |
+|---|---|---|---|
+| **Pass-through** | Transparent ghost/coin ring, glowing cyan | No effect — cosmetic only (introduces players to obstacle positions) | High (3–5/lap) |
+| **Slow-down** | Oil slick / mud puddle, flat disc, amber glow | Reduces car speed by 50% for 2 seconds | Medium (2–3/lap) |
+| **Solid** | Orange barrel / concrete block, BoxGeometry | Collision → reduces car HP by 25, brief camera shake | Low (1–2/lap) |
+
+**Car HP system:**
+- Start with 100 HP
+- HP bar shown in HUD (red/green gradient)
+- HP regens 5/s when not hitting obstacles
+- HP ≤ 0 → Game Over (car explosion particle burst)
+
+**Obstacle spawning:**
+```js
+function spawnObstacles(curve, level) {
+    if (level <= 30) return [];
+    const count = Math.floor((level - 30) * 0.5) + 3;
+    // Randomly pick t values along curve, avoid player start (t < 0.1)
+    // Mix of 3 types weighted: 50% pass-through, 30% slow, 20% solid
+}
+```
+
+**Obstacle collision:**
+- Each frame compute distance from car's world position to each obstacle position
+- Threshold: 2.5 units (half car width + half obstacle width)
+- Apply effect based on obstacle type
+
+---
+
+### Controls
+
+| Input | Action |
+|---|---|
+| W / ArrowUp | Accelerate |
+| S / ArrowDown | Brake / Reverse |
+| A / ArrowLeft | Steer left |
+| D / ArrowRight | Steer right |
+| Space | Handbrake (drift effect — reduces lateral friction) |
+| Mobile | On-screen D-pad (same as Snake Infinite pattern) |
+| P | Pause |
+
+---
+
+### HUD Elements
+
+```
+┌─────────────────────────────────────────────────┐
+│ [← Back]  [⏸]         LAP 2/3   LEVEL 7        │
+│                                                  │
+│ SPEED      HP BAR          TIMER                │
+│ 124 km/h  ████████░░░░    01:24.3               │
+│                                                  │
+│ [SLOW DOWN] ← appears 2s when hitting slow obs.  │
+└─────────────────────────────────────────────────┘
+```
+
+---
+
+### Visual Polish
+
+- **Neon track edge strip lights**: `LineSegments` along track edges, colored teal (`#06b6d4`)
+- **Car headlight cone**: `SpotLight` in front of car, white/warm
+- **Particle exhaust**: small `Points` system trailing behind car, fades out
+- **Speed blur**: CSS `backdrop-filter: blur()` on canvas wrapper scaled by speed
+- **Camera shake**: on solid obstacle collision — random offset added to camera position for 0.5s
+- **Explosion on death**: `Points` burst outward, then GAME OVER screen
+
+---
+
+### Menu Screens
+
+1. **Main Menu**: Game title, difficulty (Casual / Pro / Elite — affects AI opponent count, not yet implemented), Play button
+2. **Level Complete**: Time, HP remaining, stars (1–3), "Next Level" button
+3. **Game Over**: Reason (HP=0 / time limit), best lap, Restart button
+
+---
+
+## Hub Integration
+
+When the game is complete, update `index.html` card `#card-pixel-drift`:
+- Change `article.coming-soon-card` → `a.game-card` (same as Snake Infinite pattern)
+- `href="games/pixel-drift/index.html"`
+- Badge: `cyan-badge` with `.live-dot`
+- Footer: "Play Now" with arrow SVG + `.game-link` class
+
+---
+
+## Open Questions
+
+> [!IMPORTANT]
+> **Track style**: The hub currently describes PixelDrift as "Retro pixel-art street racing through neon-lit cities." However the user wants actual 3D cars and a proper race track. The description will be updated — confirm: should it be **neon-lit night circuit** (dark asphalt, cyan/pink strip lighting) or **daylight stadium circuit** (bright white track)?
+
+> [!IMPORTANT]
+> **AI Opponents**: Should there be AI opponent cars racing alongside the player? (Even 1–2 simple rail-following opponents would add excitement.) Or is it solo time-trial only for the initial version?
+
+> [!CAUTION]
+> **Three.js CDN version**: Plan uses `r167`. If the user is offline or CDN fails, the game breaks. An alternative is to inline a minified Three.js (1.5MB). Recommend CDN for now.
+
+---
+
+## Verification Plan
+
+### Automated (Browser Subagent)
+1. Navigate to `localhost:3000/games/pixel-drift/index.html`
+2. Click Play, verify 3D scene loads (car + track visible)
+3. Press W → car accelerates, camera follows
+4. Complete one lap → Level 2 loads correctly
+5. Navigate to Level 31 (via JS console `GAME.level = 31`) → verify obstacles spawn
+6. Hit a solid obstacle → verify HP decreases
+7. Hit a slow obstacle → verify speed drop
+8. HP = 0 → verify game over screen
+
+### Manual
+- Mobile touchscreen D-pad
+- Visual quality check (neon glow, car model looks arcade-appropriate)

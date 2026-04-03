@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Pixel.Drift — 3D arcade racing in DreamRealm Games. Race through city streets, mountain circuits, and riverside tracks.">
+  <title>Pixel.Drift — DreamRealm Games</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="drift.css">
+</head>
+<body>
+
+<div id="canvas-container"></div>
+
+<!-- HUD -->
+<div id="hud" class="hud-container hidden">
+  <div class="top-nav">
+    <a href="../../index.html" class="nav-btn back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Hub
+    </a>
+    <button id="pause-btn" class="nav-btn" title="Pause">
+      <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      <svg class="icon-play hidden" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+  </div>
+  <div class="hud-stats">
+    <div class="score-box">
+      <span class="hud-label">LAP</span>
+      <span class="hud-value" id="hud-lap">1 / 3</span>
+    </div>
+    <div class="score-box">
+      <span class="hud-label">SPEED</span>
+      <span class="hud-value speed-val" id="hud-speed">0 <small>km/h</small></span>
+    </div>
+    <div class="score-box">
+      <span class="hud-label">LEVEL</span>
+      <span class="hud-value" id="hud-level">1</span>
+    </div>
+    <div class="score-box">
+      <span class="hud-label">TIME</span>
+      <span class="hud-value" id="hud-time">0:00</span>
+    </div>
+  </div>
+  <div id="health-bar-wrap">
+    <span class="hud-label">HULL</span>
+    <div id="health-bar-bg"><div id="health-bar"></div></div>
+    <span class="hud-label" id="hp-text">100%</span>
+  </div>
+  <div id="effect-msg" class="effect-msg hidden"></div>
+
+  <!-- Position indicator for AI mode -->
+  <div id="race-pos" class="race-pos hidden">P<span id="race-pos-num">1</span></div>
+</div>
+
+<!-- Mobile D-Pad -->
+<div id="mobile-controls" class="mobile-controls hidden">
+  <div class="dpad-grid">
+    <button class="dpad-btn up" data-action="accel">▲</button>
+    <button class="dpad-btn left" data-action="left">◄</button>
+    <button class="dpad-btn right" data-action="right">►</button>
+    <button class="dpad-btn down" data-action="brake">▼</button>
+  </div>
+  <button class="dpad-btn boost-btn" data-action="boost">DRIFT</button>
+</div>
+
+<!-- Main Menu -->
+<div id="main-menu" class="overlay menu-active">
+  <div class="menu-card glass-panel">
+    <div class="game-badge cyan-badge"><span class="live-dot"></span>LIVE</div>
+    <h1 class="game-title">Pixel<span class="title-dot">.</span>Drift</h1>
+    <p class="game-subtitle">Race through 3D circuits. Master every bend.</p>
+
+    <div class="mode-selector">
+      <span class="diff-label">Game Mode</span>
+      <div class="diff-options">
+        <button class="diff-btn active" data-mode="solo">⏱ Solo Time Trial</button>
+        <button class="diff-btn" data-mode="ai">🏎 vs AI Opponents</button>
+      </div>
+    </div>
+
+    <div class="controls-info">
+      <div class="control-key">W A S D</div>
+      <span>or</span>
+      <div class="control-key">Arrows</div>
+      <span>· Space = Handbrake</span>
+    </div>
+
+    <button id="start-btn" class="action-btn primary-btn play-btn-glow">
+      <span>Start Race</span>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- Level Complete -->
+<div id="level-complete-menu" class="overlay hidden">
+  <div class="menu-card glass-panel glow-cyan">
+    <div class="game-badge cyan-badge">✓ CLEARED</div>
+    <h2 class="level-complete-title">Circuit Complete!</h2>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-lbl">Level</span>
+        <span class="stat-val" id="lc-level">1</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-lbl">Best Lap</span>
+        <span class="stat-val" id="lc-bestlap">--</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-lbl">Hull</span>
+        <span class="stat-val" id="lc-hp">100%</span>
+      </div>
+    </div>
+    <div class="star-row" id="star-row">★★★</div>
+    <button id="next-level-btn" class="action-btn primary-btn play-btn-glow">
+      <span>Next Circuit →</span>
+    </button>
+    <button id="menu-from-lc-btn" class="action-btn secondary-btn">Main Menu</button>
+  </div>
+</div>
+
+<!-- Game Over -->
+<div id="game-over-menu" class="overlay hidden">
+  <div class="menu-card glass-panel glow-red">
+    <h2 class="game-over-title">Wrecked!</h2>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-lbl">Level</span>
+        <span class="stat-val" id="go-level">1</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-lbl">Laps Done</span>
+        <span class="stat-val" id="go-laps">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-lbl">Best Lap</span>
+        <span class="stat-val" id="go-bestlap">--</span>
+      </div>
+    </div>
+    <button id="restart-btn" class="action-btn primary-btn">Try Again</button>
+    <button id="menu-from-go-btn" class="action-btn secondary-btn">Main Menu</button>
+  </div>
+</div>
+
+<!-- Pause Screen -->
+<div id="pause-menu" class="overlay hidden">
+  <div class="menu-card glass-panel">
+    <h2 class="game-title" style="font-size:2rem">Paused</h2>
+    <button id="resume-btn" class="action-btn primary-btn">Resume</button>
+    <button id="menu-from-pause-btn" class="action-btn secondary-btn">Main Menu</button>
+  </div>
+</div>
+
+<script src="three.min.js"></script>
+<script src="drift.js"></script>
+</body>
+</html>
